@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $API = new RouterosAPI();
 
-    // Koneksi ke Mikrotik
+    // Koneksi ke Mikrotik --> isi ip, username dan password 
     if ($API->connect('', '', '', 8728)) {
 
         // Mendapatkan daftar secret PPP
