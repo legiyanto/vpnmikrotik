@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $API = new RouterosAPI();
 
     // Koneksi ke Mikrotik --> isi ip, username dan password 
-    if ($API->connect('', '', '', 8728)) {
+    if ($API->connect('103.13.206.125', 'admin', '04121989', 8728)) {
 
         // Mendapatkan daftar secret PPP
         $API->write('/ppp/secret/print');
@@ -28,18 +28,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($usernameExists) {
             $message = "Username sudah ada. Silakan pilih username lain.";
         } else {
-            // Mendapatkan IP address terakhir yang digunakan
-            $lastIP = '192.168.25.1'; // Default IP awal jika tidak ada data
+            // Mendapatkan IP address berikutnya, mulai dari 192.168.25.2
+            $baseIP = '192.168.25.';
+            $usedIPs = [];
+
+            // Mengumpulkan IP yang sudah digunakan
             foreach ($responses as $response) {
                 if (isset($response['remote-address'])) {
-                    $lastIP = $response['remote-address'];
+                    $usedIPs[] = intval(explode('.', $response['remote-address'])[3]);
                 }
             }
 
-            // Mendapatkan IP address berikutnya
-            $parts = explode('.', $lastIP);
-            $parts[3] = (int)$parts[3] + 1; // Menambahkan 1 ke oktet terakhir
-            $newIP = implode('.', $parts);
+            // Mencari alamat IP yang belum terpakai
+            $newIPIndex = 2; // Dimulai dari 2 (192.168.25.2)
+            while (in_array($newIPIndex, $usedIPs)) {
+                $newIPIndex++;
+            }
+
+            // Alamat IP baru
+            $newIP = $baseIP . $newIPIndex;
 
             // Membuat secret PPP baru
             $API->write('/ppp/secret/add', false);
