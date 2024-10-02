@@ -101,11 +101,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $API->write('=to-ports=' . $port); // Gunakan port yang diinginkan pengguna untuk to-ports
             $API->read();
 
+            // Pesan untuk ditampilkan
             $message = "<b>Hostname : vpslegi.my.id</b><br>";
             $message .= "<br>";
             $message .= "Username: $username<br>";
             $message .= "Password: $password<br>";
-            $message .= "Masa aktif: $duration<br>";
+            $message .= "Masa aktif: " . getDurationText($duration) . "<br>"; // Ubah di sini
             $message .= "Port yang Di masukan: $port<br>";
             $message .= "Port Forwarding Ke: $randomDstPort<br>";
         }
@@ -113,6 +114,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $API->disconnect();
     } else {
         $message = 'Error: Could not connect to Mikrotik.';
+    }
+}
+
+// Fungsi untuk mengonversi durasi ke dalam bahasa Indonesia
+function getDurationText($duration) {
+    switch ($duration) {
+        case '1d':
+            return '1 Hari';
+        case '1w':
+            return '1 Minggu';
+        case '1m':
+            return '1 Bulan';
+        case '3m':
+            return '3 Bulan';
+        case '6m':
+            return '6 Bulan';
+        case '1y':
+            return '1 Tahun';
+        default:
+            return 'Tidak Diketahui';
     }
 }
 ?>
